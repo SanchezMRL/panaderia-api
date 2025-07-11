@@ -27,7 +27,7 @@ const pgPool = new Pool({
 });
 
 // 🔗 Conexión MongoDB
-const mongoClient = new MongoClient('mongodb://localhost:27017');
+const mongoClient = new MongoClient('mongodb+srv://Jairo:Manchas23@cluster0.r9kpbor.mongodb.net/Panaderia?retryWrites=true&w=majority&appName=Cluster0');
 let mongoDb;
 
 mongoClient.connect().then(client => {
