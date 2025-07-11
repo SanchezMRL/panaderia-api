@@ -123,6 +123,7 @@ app.get('/pedido/proveedor/:id', async (req, res) => {
 
 // 🚀 Iniciar servidor
 const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 API corriendo en http://localhost:${PORT}`);
+  console.log(`🚀 API corriendo en puerto ${PORT}`);
 });
