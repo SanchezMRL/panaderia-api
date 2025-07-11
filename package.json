@@ -1,18 +1,18 @@
 {
   "name": "panaderia-api",
   "version": "1.0.0",
-  "description": "API de pedidos para panadería con PostgreSQL y MongoDB",
+  "description": "API de Panadería con PostgreSQL y MongoDB",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "engines": {
-    "node": ">=18"
-  },
+  "keywords": [],
+  "author": "SanchezMRL",
+  "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "mongodb": "^5.7.0",
+    "mongodb": "^5.8.0",
     "pg": "^8.11.3"
   }
 }
