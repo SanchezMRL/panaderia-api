@@ -17,26 +17,24 @@ function formatearFecha(fecha) {
   return `${dia}/${mes}/${año}`;
 }
 
-// 🔗 Conexión PostgreSQL
+// 🔗 PostgreSQL (Render o Neon)
 const pgPool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'panaderia', // en minúsculas
-  password: 'Manchas23', // ← cambia si es necesario
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
-// 🔗 Conexión MongoDB
-const mongoClient = new MongoClient('mongodb+srv://Jairo:Manchas23@cluster0.r9kpbor.mongodb.net/Panaderia?retryWrites=true&w=majority&appName=Cluster0');
+// 🔗 MongoDB Atlas
+const mongoClient = new MongoClient(process.env.MONGO_URI);
 let mongoDb;
 
 mongoClient.connect().then(client => {
-  mongoDb = client.db('Panaderia'); // con P mayúscula
-  console.log('✅ Conectado a MongoDB');
+  mongoDb = client.db('Panaderia');
+  console.log('✅ Conectado a MongoDB Atlas');
 }).catch(err => console.error('❌ Error conectando a MongoDB:', err));
 
-
-// 📦 RUTA: Pedido de Cliente con detalles y opinión
+// 📦 Ruta: Pedido de Cliente con detalles y opinión
 app.get('/pedido/cliente/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   try {
@@ -83,8 +81,7 @@ app.get('/pedido/cliente/:id', async (req, res) => {
   }
 });
 
-
-// 🏭 RUTA: Pedido de Proveedor con detalles
+// 🏭 Ruta: Pedido de Proveedor con detalles
 app.get('/pedido/proveedor/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   try {
@@ -124,8 +121,8 @@ app.get('/pedido/proveedor/:id', async (req, res) => {
   }
 });
 
-
 // 🚀 Iniciar servidor
-app.listen(3000, () => {
-  console.log('🚀 API corriendo en http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 API corriendo en http://localhost:${PORT}`);
 });
