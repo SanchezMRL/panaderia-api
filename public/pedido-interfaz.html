@@ -49,72 +49,73 @@
   <div class="resultado" id="resultado"></div>
 
   <script>
-    async function buscarPedido() {
-      const id = document.getElementById('pedidoId').value;
-      const tipo = document.getElementById('tipoPedido').value;
-      const resultado = document.getElementById('resultado');
-      resultado.innerHTML = '🔍 Buscando...';
+  async function buscarPedido() {
+    const id = document.getElementById('pedidoId').value;
+    const tipo = document.getElementById('tipoPedido').value;
+    const resultado = document.getElementById('resultado');
+    resultado.innerHTML = '🔍 Buscando...';
 
-      try {
-        const res = await fetch(`http://localhost:3000/pedido/${tipo}/${id}`);
-        const data = await res.json();
+    try {
+      const res = await fetch(`https://panaderia-api.onrender.com/pedido/${tipo}/${id}`);
+      const data = await res.json();
 
-        if (!data || !data.pedido) {
-          resultado.innerHTML = `<p>❌ No se encontró el pedido con ID ${id} (${tipo}).</p>`;
-          return;
-        }
-
-        let html = `<h3>📦 Pedido ${tipo === 'cliente' ? 'de Cliente' : 'al Proveedor'} #${id}</h3>`;
-        const p = data.pedido;
-
-        if (tipo === 'cliente') {
-          html += `
-            <p><strong>Fecha:</strong> ${p.fecha}</p>
-            <p><strong>Estado:</strong> ${p.estado}</p>
-            <p><strong>Cliente:</strong> ${p.cliente_nombre} (${p.cliente_email})</p>
-            <p><strong>Empleado (Vendedor):</strong> ${p.empleado_nombre}</p>
-            <h4>🛒 Detalles:</h4>
-            <ul>
-              ${p.detalles.map(d =>
-                `<li>${d.producto_nombre} - Cantidad: ${d.cantidad} x S/.${d.precio_unitario.toFixed(2)}</li>`
-              ).join('')}
-            </ul>
-          `;
-
-          if (data.opinion) {
-            const o = data.opinion;
-            html += `
-              <div class="opinion">
-                <strong>🗣 Opinión:</strong> "${o.comentario}"<br>
-                ⭐ Calificación: ${o.calificacion}/5 | 😊 Satisfacción: ${o.satisfaccion}/5
-              </div>
-            `;
-          }
-
-        } else {
-          html += `
-            <p><strong>Fecha:</strong> ${p.fecha}</p>
-            <p><strong>Estado:</strong> ${p.estado}</p>
-            <p><strong>Proveedor:</strong> ${p.proveedor_nombre} (${p.proveedor_email})</p>
-            <p><strong>Empleado (Administrador):</strong> ${p.empleado_nombre}</p>
-            <p><strong>Observaciones:</strong> ${p.observaciones || 'Ninguna'}</p>
-            <h4>📦 Detalles del Pedido:</h4>
-            <ul>
-              ${p.detalles.map(d =>
-                `<li>${d.producto_nombre} - Cantidad: ${d.cantidad} x S/.${d.coste_unitario.toFixed(2)}</li>`
-              ).join('')}
-            </ul>
-          `;
-        }
-
-        resultado.innerHTML = html;
-
-      } catch (err) {
-        resultado.innerHTML = `<p style="color:red">❌ Error al conectar con la API</p>`;
-        console.error(err);
+      if (!data || !data.pedido) {
+        resultado.innerHTML = `<p>❌ No se encontró el pedido con ID ${id} (${tipo}).</p>`;
+        return;
       }
+
+      let html = `<h3>📦 Pedido ${tipo === 'cliente' ? 'de Cliente' : 'al Proveedor'} #${id}</h3>`;
+      const p = data.pedido;
+
+      if (tipo === 'cliente') {
+        html += `
+          <p><strong>Fecha:</strong> ${p.fecha}</p>
+          <p><strong>Estado:</strong> ${p.estado}</p>
+          <p><strong>Cliente:</strong> ${p.cliente_nombre} (${p.cliente_email})</p>
+          <p><strong>Empleado (Vendedor):</strong> ${p.empleado_nombre}</p>
+          <h4>🛒 Detalles:</h4>
+          <ul>
+            ${p.detalles.map(d =>
+              `<li>${d.producto_nombre} - Cantidad: ${d.cantidad} x S/.${d.precio_unitario.toFixed(2)}</li>`
+            ).join('')}
+          </ul>
+        `;
+
+        if (data.opinion) {
+          const o = data.opinion;
+          html += `
+            <div class="opinion">
+              <strong>🗣 Opinión:</strong> "${o.comentario}"<br>
+              ⭐ Calificación: ${o.calificacion}/5 | 😊 Satisfacción: ${o.satisfaccion}/5
+            </div>
+          `;
+        }
+
+      } else {
+        html += `
+          <p><strong>Fecha:</strong> ${p.fecha}</p>
+          <p><strong>Estado:</strong> ${p.estado}</p>
+          <p><strong>Proveedor:</strong> ${p.proveedor_nombre} (${p.proveedor_email})</p>
+          <p><strong>Empleado (Administrador):</strong> ${p.empleado_nombre}</p>
+          <p><strong>Observaciones:</strong> ${p.observaciones || 'Ninguna'}</p>
+          <h4>📦 Detalles del Pedido:</h4>
+          <ul>
+            ${p.detalles.map(d =>
+              `<li>${d.producto_nombre} - Cantidad: ${d.cantidad} x S/.${d.coste_unitario.toFixed(2)}</li>`
+            ).join('')}
+          </ul>
+        `;
+      }
+
+      resultado.innerHTML = html;
+
+    } catch (err) {
+      resultado.innerHTML = `<p style="color:red">❌ Error al conectar con la API</p>`;
+      console.error(err);
     }
-  </script>
+  }
+</script>
+
 
 </body>
 </html>
