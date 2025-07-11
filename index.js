@@ -17,22 +17,27 @@ function formatearFecha(fecha) {
   return `${dia}/${mes}/${año}`;
 }
 
-// 🔗 PostgreSQL (Render o Neon)
+// 🔗 Conexión PostgreSQL (usando DATABASE_URL desde Render)
 const pgPool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  ssl: { rejectUnauthorized: false }
 });
 
-// 🔗 MongoDB Atlas
+// 🔗 Conexión MongoDB Atlas (usando MONGO_URI desde Render)
 const mongoClient = new MongoClient(process.env.MONGO_URI);
 let mongoDb;
 
-mongoClient.connect().then(client => {
-  mongoDb = client.db('Panaderia');
-  console.log('✅ Conectado a MongoDB Atlas');
-}).catch(err => console.error('❌ Error conectando a MongoDB:', err));
+mongoClient.connect()
+  .then(client => {
+    mongoDb = client.db('Panaderia');
+    console.log('✅ Conectado a MongoDB Atlas');
+  })
+  .catch(err => console.error('❌ Error conectando a MongoDB:', err));
+
+// 🌐 Ruta raíz
+app.get('/', (req, res) => {
+  res.send('✅ API de Panadería en funcionamiento');
+});
 
 // 📦 Ruta: Pedido de Cliente con detalles y opinión
 app.get('/pedido/cliente/:id', async (req, res) => {
@@ -121,9 +126,9 @@ app.get('/pedido/proveedor/:id', async (req, res) => {
   }
 });
 
-// 🚀 Iniciar servidor
-const PORT = process.env.PORT || 3000;
+// 🚀 Iniciar servidor (Render usará el puerto dinámico en process.env.PORT)
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 API corriendo en puerto ${PORT}`);
 });
+
