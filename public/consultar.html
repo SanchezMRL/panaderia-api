@@ -24,22 +24,24 @@
   </div>
 
   <script>
+    const API_URL = 'https://panaderia-api.onrender.com';
+
     async function buscar() {
       const tipo = document.getElementById('tipoPedido').value;
       const id = document.getElementById('pedidoId').value;
       const div = document.getElementById('resultado');
-      div.innerHTML = "Buscando...";
+      div.innerHTML = "🔍 Buscando...";
 
       try {
-        const res = await fetch(`http://localhost:3000/pedido/${tipo}/${id}`);
+        const res = await fetch(`${API_URL}/pedido/${tipo}/${id}`);
         const data = await res.json();
-        if (!data || !data.pedido) return div.innerHTML = "Pedido no encontrado.";
+        if (!data || !data.pedido) return div.innerHTML = "❌ Pedido no encontrado.";
 
-        let html = `<h3>Pedido ${tipo}</h3><ul>`;
+        let html = `<h3>Pedido de ${tipo}</h3><ul>`;
         html += `<li><strong>Fecha:</strong> ${data.pedido.fecha}</li>`;
         html += `<li><strong>Estado:</strong> ${data.pedido.estado}</li>`;
         html += `<li><strong>Empleado:</strong> ${data.pedido.empleado_nombre}</li>`;
-        
+
         if (tipo === "cliente") {
           html += `<li><strong>Cliente:</strong> ${data.pedido.cliente_nombre}</li>`;
         } else {
@@ -48,7 +50,8 @@
 
         html += `<li><strong>Productos:</strong><ul>`;
         data.pedido.detalles.forEach(p => {
-          html += `<li>${p.producto_nombre} - ${p.cantidad} x S/.${(p.precio_unitario || p.coste_unitario).toFixed(2)}</li>`;
+          const precio = (p.precio_unitario || p.coste_unitario || 0).toFixed(2);
+          html += `<li>${p.producto_nombre} - ${p.cantidad} x S/.${precio}</li>`;
         });
         html += `</ul></li>`;
 
@@ -61,10 +64,9 @@
 
       } catch (e) {
         console.error(e);
-        div.innerHTML = "Error al consultar.";
+        div.innerHTML = "❌ Error al consultar el pedido.";
       }
     }
   </script>
 </body>
 </html>
-
