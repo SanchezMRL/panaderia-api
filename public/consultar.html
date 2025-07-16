@@ -24,6 +24,7 @@
   </div>
 
   <script>
+    // ⚠️ Usa tu URL de Render
     const API_URL = 'https://panaderia-api.onrender.com';
 
     async function buscar() {
@@ -35,7 +36,11 @@
       try {
         const res = await fetch(`${API_URL}/pedido/${tipo}/${id}`);
         const data = await res.json();
-        if (!data || !data.pedido) return div.innerHTML = "❌ Pedido no encontrado.";
+
+        if (!data || !data.pedido) {
+          div.innerHTML = "❌ Pedido no encontrado.";
+          return;
+        }
 
         let html = `<h3>Pedido de ${tipo}</h3><ul>`;
         html += `<li><strong>Fecha:</strong> ${data.pedido.fecha}</li>`;
@@ -63,7 +68,7 @@
         div.innerHTML = html;
 
       } catch (e) {
-        console.error(e);
+        console.error('❌ Error al consultar:', e);
         div.innerHTML = "❌ Error al consultar el pedido.";
       }
     }
