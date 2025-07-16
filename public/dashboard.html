@@ -10,7 +10,7 @@
       margin: 30px;
       background-color: #f4f4f4;
     }
-    h1 {
+    h1, h2 {
       text-align: center;
       color: #333;
     }
@@ -47,11 +47,12 @@
       text-align: center;
       margin-top: 20px;
       color: red;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1>Opiniones de Productos</h1>
+  <h1>Dashboard de Opiniones</h1>
 
   <div id="mensaje"></div>
 
@@ -59,7 +60,7 @@
     <canvas id="graficoPromedio"></canvas>
   </div>
 
-  <h2 style="text-align: center; margin-top: 50px;">Opiniones Individuales</h2>
+  <h2>Opiniones Individuales</h2>
   <table id="tablaOpiniones">
     <thead>
       <tr>
@@ -76,12 +77,11 @@
   <script>
     async function cargarDashboard() {
       try {
-        // ✅ Cargar promedio por producto
         const res = await fetch('/dashboard/opiniones');
         const data = await res.json();
 
         if (!Array.isArray(data) || data.length === 0) {
-          document.getElementById('mensaje').textContent = '⚠️ No hay opiniones registradas aún.';
+          document.getElementById('mensaje').textContent = '⚠️ No hay opiniones registradas para mostrar.';
           return;
         }
 
@@ -111,10 +111,9 @@
             }
           }
         });
-
       } catch (err) {
         console.error('❌ Error al cargar el dashboard:', err);
-        document.getElementById('mensaje').textContent = '❌ Error al cargar el dashboard';
+        document.getElementById('mensaje').textContent = '❌ Error al cargar el gráfico del dashboard';
       }
     }
 
@@ -128,7 +127,7 @@
 
         if (!Array.isArray(data) || data.length === 0) {
           const fila = document.createElement('tr');
-          fila.innerHTML = `<td colspan="5">No hay opiniones registradas.</td>`;
+          fila.innerHTML = `<td colspan="5">No hay opiniones disponibles.</td>`;
           tbody.appendChild(fila);
           return;
         }
@@ -136,7 +135,7 @@
         data.forEach(op => {
           const fila = document.createElement('tr');
           fila.innerHTML = `
-            <td>${op.id_pedido_cliente}</td>
+            <td>${op.id_pedido_cliente ?? 'Sin ID'}</td>
             <td>${op.comentario}</td>
             <td>${op.calificacion}</td>
             <td>${op.satisfaccion}</td>
@@ -146,7 +145,7 @@
         });
       } catch (err) {
         console.error('❌ Error al cargar opiniones:', err);
-        document.getElementById('mensaje').textContent += ' ❌ Error al cargar tabla de opiniones';
+        document.getElementById('mensaje').textContent += ' ❌ No se pudo cargar la tabla de opiniones';
       }
     }
 
@@ -155,4 +154,3 @@
   </script>
 </body>
 </html>
-
