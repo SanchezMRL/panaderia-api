@@ -2,11 +2,12 @@ const express = require('express');
 const { Pool } = require('pg');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
+require('dotenv').config(); // Para usar .env si lo usas localmente también
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static('public')); // Asegúrate de tener la carpeta "public"
 
 // 🔧 Función para formatear fechas a "DD/MM/YYYY"
 function formatearFecha(fecha) {
@@ -18,13 +19,13 @@ function formatearFecha(fecha) {
   return `${dia}/${mes}/${año}`;
 }
 
-// 🔗 Conexión PostgreSQL (usando DATABASE_URL desde Render)
+// 🔗 Conexión PostgreSQL (Render define DATABASE_URL como variable de entorno)
 const pgPool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
 
-// 🔗 Conexión MongoDB Atlas (usando MONGO_URI desde Render)
+// 🔗 Conexión MongoDB Atlas
 const mongoClient = new MongoClient(process.env.MONGO_URI);
 let mongoDb;
 
@@ -35,12 +36,12 @@ mongoClient.connect()
   })
   .catch(err => console.error('❌ Error conectando a MongoDB:', err));
 
-// 🌐 Ruta raíz
+// 🌐 Ruta base
 app.get('/', (req, res) => {
-  res.send('✅ API de Panadería en funcionamiento');
+  res.sendFile(__dirname + '/public/index.html'); // Servir página de inicio
 });
 
-// 📦 Ruta: Pedido de Cliente con detalles y opinión
+// 📦 Pedido Cliente + detalles + opinión
 app.get('/pedido/cliente/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   try {
@@ -61,20 +62,19 @@ app.get('/pedido/cliente/:id', async (req, res) => {
       WHERE dpc.id_pedido_cliente = $1
     `, [id]);
 
-    const opinion = await mongoDb
-      .collection('opiniones_pedidos')
-      .findOne({ id_pedido_cliente: id }, { projection: { _id: 0 } });
-
-    const detallesProcesados = detalles.rows.map(d => ({
-      ...d,
-      precio_unitario: Number(d.precio_unitario)
-    }));
+    const opinion = await mongoDb.collection('opiniones_pedidos').findOne(
+      { id_pedido_cliente: id },
+      { projection: { _id: 0 } }
+    );
 
     res.json({
       pedido: {
         ...pedido.rows[0],
         fecha: formatearFecha(pedido.rows[0].fecha),
-        detalles: detallesProcesados
+        detalles: detalles.rows.map(d => ({
+          ...d,
+          precio_unitario: Number(d.precio_unitario)
+        }))
       },
       opinion: opinion
         ? { ...opinion, fecha: formatearFecha(opinion.fecha) }
@@ -82,12 +82,12 @@ app.get('/pedido/cliente/:id', async (req, res) => {
     });
 
   } catch (err) {
-    console.error('❌ Error al obtener pedido de cliente:', err);
+    console.error('❌ Error obteniendo pedido cliente:', err);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
-// 🏭 Ruta: Pedido de Proveedor con detalles
+// 🏭 Pedido Proveedor + detalles
 app.get('/pedido/proveedor/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   try {
@@ -108,28 +108,97 @@ app.get('/pedido/proveedor/:id', async (req, res) => {
       WHERE dpp.id_pedido_proveedor = $1
     `, [id]);
 
-    const detallesProcesados = detalles.rows.map(d => ({
-      ...d,
-      coste_unitario: Number(d.coste_unitario)
-    }));
-
     res.json({
       pedido: {
         ...pedido.rows[0],
         fecha: formatearFecha(pedido.rows[0].fecha),
-        detalles: detallesProcesados
+        detalles: detalles.rows.map(d => ({
+          ...d,
+          coste_unitario: Number(d.coste_unitario)
+        }))
       }
     });
 
   } catch (err) {
-    console.error('❌ Error al obtener pedido de proveedor:', err);
+    console.error('❌ Error obteniendo pedido proveedor:', err);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
-// 🚀 Iniciar servidor (Render usará el puerto dinámico en process.env.PORT)
+// 📥 Opinión
+app.post('/opinion', async (req, res) => {
+  const { id_pedido_cliente, comentario, calificacion, satisfaccion, fecha } = req.body;
+
+  try {
+    await mongoDb.collection('opiniones_pedidos').insertOne({
+      id_pedido_cliente,
+      comentario,
+      calificacion,
+      satisfaccion,
+      fecha: new Date(fecha)
+    });
+
+    res.json({ mensaje: 'Opinión guardada' });
+
+  } catch (err) {
+    console.error('❌ Error guardando opinión:', err);
+    res.status(500).json({ error: 'Error al guardar opinión' });
+  }
+});
+
+// 📊 Obtener todas las opiniones
+app.get('/opiniones', async (req, res) => {
+  try {
+    const opiniones = await mongoDb.collection('opiniones_pedidos').find().toArray();
+    res.json(opiniones);
+  } catch (err) {
+    console.error('❌ Error obteniendo opiniones:', err);
+    res.status(500).json({ error: 'Error al obtener opiniones' });
+  }
+});
+
+// 📊 Dashboard de calificación por producto
+app.get('/dashboard/opiniones', async (req, res) => {
+  try {
+    const opiniones = await mongoDb.collection('opiniones_pedidos').find().toArray();
+    const resultados = {};
+
+    for (const opinion of opiniones) {
+      const detalles = await pgPool.query(`
+        SELECT dpc.id_producto, p.nombre
+        FROM Detalle_Pedido_Cliente dpc
+        JOIN Producto p ON dpc.id_producto = p.id_producto
+        WHERE dpc.id_pedido_cliente = $1
+      `, [opinion.id_pedido_cliente]);
+
+      for (const d of detalles.rows) {
+        if (!resultados[d.id_producto]) {
+          resultados[d.id_producto] = {
+            nombre: d.nombre,
+            total: 0,
+            cantidad: 0
+          };
+        }
+        resultados[d.id_producto].total += opinion.calificacion;
+        resultados[d.id_producto].cantidad++;
+      }
+    }
+
+    const ranking = Object.entries(resultados).map(([id, val]) => ({
+      id_producto: id,
+      nombre: val.nombre,
+      promedio: (val.total / val.cantidad).toFixed(2)
+    })).sort((a, b) => b.promedio - a.promedio);
+
+    res.json(ranking);
+  } catch (err) {
+    console.error('❌ Error dashboard opiniones:', err);
+    res.status(500).json({ error: 'Error procesando dashboard' });
+  }
+});
+
+// 🚀 Puerto para Render
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 API corriendo en puerto ${PORT}`);
 });
-
