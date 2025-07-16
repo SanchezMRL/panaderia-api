@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panadería - Inicio</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+      background-color: #f8f8f8;
+    }
+    h1 {
+      margin-bottom: 30px;
+    }
+    .opciones {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+    }
+    .opcion {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      width: 200px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .opcion:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h1>Bienvenido al Sistema de Pedidos</h1>
+
+  <div class="opciones">
+    <div class="opcion" onclick="location.href='consultar.html'">
+      Consultar Pedido
+    </div>
+    <div class="opcion" onclick="location.href='registrar.html'">
+      Registrar Pedido
+    </div>
+    <div class="opcion" onclick="location.href='dashboard.html'">
+      Dashboard de Opiniones
+    </div>
+  </div>
+</body>
+</html>

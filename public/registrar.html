@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrar Pedido</title>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+    .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    input, textarea, select, button { margin: 5px 0; padding: 8px; width: 100%; }
+    #opinionCampos { display: none; }
+  </style>
+</head>
+<body>
+  <h2>Registrar Pedido</h2>
+  <div class="card">
+    <form id="formPedido">
+      <label>Tipo de pedido:</label>
+      <select id="tipoPedido" required>
+        <option value="cliente">Cliente</option>
+        <option value="proveedor">Proveedor</option>
+      </select>
+
+      <div id="datosGenerales">
+        <input id="id_persona" placeholder="ID Cliente o Proveedor" required type="number">
+        <input id="id_empleado" placeholder="ID Empleado" required type="number">
+        <input id="fecha" required type="date">
+        <input id="estado" placeholder="Estado" required>
+      </div>
+
+      <h4>Agregar Producto</h4>
+      <input id="id_producto" placeholder="ID Producto" type="number">
+      <input id="cantidad" placeholder="Cantidad" type="number">
+      <input id="precio_unitario" placeholder="Precio o Coste Unitario" step="0.01" type="number">
+      <button type="button" onclick="agregar()">Agregar Detalle</button>
+      <ul id="listaDetalles"></ul>
+
+      <div id="opinionCampos">
+        <h4>Opinión del cliente</h4>
+        <textarea id="comentario" placeholder="Comentario"></textarea>
+        <input id="calificacion" placeholder="Calificación (1-5)" min="1" max="5" type="number">
+        <input id="satisfaccion" placeholder="Satisfacción (1-5)" min="1" max="5" type="number">
+      </div>
+
+      <button type="submit">Registrar</button>
+      <p id="mensaje"></p>
+    </form>
+  </div>
+
+  <script>
+    let detalles = [];
+
+    document.getElementById('tipoPedido').addEventListener('change', () => {
+      const tipo = document.getElementById('tipoPedido').value;
+      const opinionDiv = document.getElementById('opinionCampos');
+      opinionDiv.style.display = tipo === 'cliente' ? 'block' : 'none';
+    });
+
+    function agregar() {
+      const id_producto = parseInt(document.getElementById('id_producto').value);
+      const cantidad = parseInt(document.getElementById('cantidad').value);
+      const precio_unitario = parseFloat(document.getElementById('precio_unitario').value);
+
+      if (!id_producto || !cantidad || !precio_unitario) {
+        alert("Completa todos los campos del producto");
+        return;
+      }
+
+      detalles.push({ id_producto, cantidad, precio_unitario });
+
+      const item = document.createElement('li');
+      item.textContent = `Producto ${id_producto}: ${cantidad} x S/.${precio_unitario.toFixed(2)}`;
+      document.getElementById('listaDetalles').appendChild(item);
+
+      document.getElementById('id_producto').value = '';
+      document.getElementById('cantidad').value = '';
+      document.getElementById('precio_unitario').value = '';
+    }
+
+    document.getElementById('formPedido').addEventListener('submit', async e => {
+      e.preventDefault();
+      const tipo = document.getElementById('tipoPedido').value;
+      const id_persona = parseInt(document.getElementById('id_persona').value);
+      const id_empleado = parseInt(document.getElementById('id_empleado').value);
+      const fecha = document.getElementById('fecha').value;
+      const estado = document.getElementById('estado').value;
+
+      if (detalles.length === 0) {
+        alert("Agrega al menos un producto");
+        return;
+      }
+
+      const pedido = {
+        id_empleado,
+        fecha,
+        estado,
+        detalles
+      };
+
+      const endpoint = tipo === 'cliente' ? 'pedido/cliente' : 'pedido/proveedor';
+      if (tipo === 'cliente') pedido.id_cliente = id_persona;
+      else pedido.id_proveedor = id_persona;
+
+      try {
+        const res = await fetch(`http://localhost:3000/${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(pedido)
+        });
+
+        const data = await res.json();
+
+        if (tipo === 'cliente') {
+          const opinion = {
+            id_pedido_cliente: data.id_pedido_cliente,
+            comentario: document.getElementById('comentario').value,
+            calificacion: parseInt(document.getElementById('calificacion').value),
+            satisfaccion: parseInt(document.getElementById('satisfaccion').value),
+            fecha: new Date().toISOString()
+          };
+
+          await fetch('http://localhost:3000/opinion', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(opinion)
+          });
+        }
+
+        document.getElementById('formPedido').reset();
+        document.getElementById('listaDetalles').innerHTML = '';
+        detalles = [];
+        document.getElementById('mensaje').textContent = '✅ Pedido registrado correctamente';
+        document.getElementById('opinionCampos').style.display = 'none';
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById('mensaje').textContent = '❌ Error al registrar el pedido';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Consultar Pedido</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f0f0f0; }
+    .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    label, select, input, button { margin: 10px 5px; padding: 8px; }
+  </style>
+</head>
+<body>
+  <h2>Consultar Pedido</h2>
+  <div class="card">
+    <label>Tipo de Pedido:</label>
+    <select id="tipoPedido">
+      <option value="cliente">Cliente</option>
+      <option value="proveedor">Proveedor</option>
+    </select>
+    <label>ID:</label>
+    <input type="number" id="pedidoId" min="1">
+    <button onclick="buscar()">Buscar</button>
+    <div id="resultado" style="margin-top:20px;"></div>
+  </div>
+
+  <script>
+    async function buscar() {
+      const tipo = document.getElementById('tipoPedido').value;
+      const id = document.getElementById('pedidoId').value;
+      const div = document.getElementById('resultado');
+      div.innerHTML = "Buscando...";
+
+      try {
+        const res = await fetch(`http://localhost:3000/pedido/${tipo}/${id}`);
+        const data = await res.json();
+        if (!data || !data.pedido) return div.innerHTML = "Pedido no encontrado.";
+
+        let html = `<h3>Pedido ${tipo}</h3><ul>`;
+        html += `<li><strong>Fecha:</strong> ${data.pedido.fecha}</li>`;
+        html += `<li><strong>Estado:</strong> ${data.pedido.estado}</li>`;
+        html += `<li><strong>Empleado:</strong> ${data.pedido.empleado_nombre}</li>`;
+        
+        if (tipo === "cliente") {
+          html += `<li><strong>Cliente:</strong> ${data.pedido.cliente_nombre}</li>`;
+        } else {
+          html += `<li><strong>Proveedor:</strong> ${data.pedido.proveedor_nombre}</li>`;
+        }
+
+        html += `<li><strong>Productos:</strong><ul>`;
+        data.pedido.detalles.forEach(p => {
+          html += `<li>${p.producto_nombre} - ${p.cantidad} x S/.${(p.precio_unitario || p.coste_unitario).toFixed(2)}</li>`;
+        });
+        html += `</ul></li>`;
+
+        if (data.opinion) {
+          html += `<li><strong>Opinión:</strong> ${data.opinion.comentario} (⭐${data.opinion.calificacion}/5)</li>`;
+        }
+
+        html += `</ul>`;
+        div.innerHTML = html;
+
+      } catch (e) {
+        console.error(e);
+        div.innerHTML = "Error al consultar.";
+      }
+    }
+  </script>
+</body>
+</html>
+
