@@ -197,6 +197,34 @@ app.get('/dashboard/opiniones', async (req, res) => {
   }
 });
 
+// 📦 Obtener inventario de productos
+app.get('/inventario', async (req, res) => {
+  try {
+    const inventario = await pgPool.query(`
+      SELECT
+        i.id_producto,
+        p.nombre,
+        p.categoria,
+        p.unidad_medida,
+        i.cantidad,
+        i.ultima_actualizacion
+      FROM Inventario i
+      JOIN Producto p ON i.id_producto = p.id_producto
+    `);
+
+    const resultado = inventario.rows.map(row => ({
+      ...row,
+      ultima_actualizacion: row.ultima_actualizacion ? row.ultima_actualizacion.toISOString() : null
+    }));
+
+    res.json(resultado);
+
+  } catch (err) {
+    console.error('❌ Error obteniendo inventario:', err);
+    res.status(500).json({ error: 'Error interno al obtener inventario' });
+  }
+});
+
 // 🚀 Puerto para Render
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
