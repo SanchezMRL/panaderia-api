@@ -2,49 +2,50 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Panadería - Inicio</title>
+  <title>Panadería - Sistema de Gestión</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
+      background: #f2f2f2;
       padding: 50px;
-      background-color: #f8f8f8;
+      text-align: center;
     }
     h1 {
-      margin-bottom: 30px;
+      font-size: 36px;
+      color: #333;
     }
     .opciones {
-      display: flex;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 30px;
+      margin-top: 40px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .opcion {
       background-color: #fff;
       padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      width: 200px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
       cursor: pointer;
-      transition: transform 0.2s;
     }
     .opcion:hover {
       transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
     }
   </style>
 </head>
 <body>
-  <h1>Bienvenido al Sistema de Pedidos</h1>
+  <h1>🍞 Bienvenido al Sistema de Gestión de la Panadería</h1>
 
   <div class="opciones">
-    <div class="opcion" onclick="location.href='consultar.html'">
-      Consultar Pedido
-    </div>
-    <div class="opcion" onclick="location.href='registrar.html'">
-      Registrar Pedido
-    </div>
-    <div class="opcion" onclick="location.href='dashboard.html'">
-      Dashboard de Opiniones
-    </div>
+    <div class="opcion" onclick="location.href='registrar.html'">Registrar Pedido</div>
+    <div class="opcion" onclick="location.href='consultar.html'">Consultar Pedido</div>
+    <div class="opcion" onclick="location.href='dashboard.html'">Dashboard de Opiniones</div>
+    <div class="opcion" onclick="location.href='inventario.html'">Inventario</div>
+    <div class="opcion" onclick="location.href='reportes.html'">Reportes</div>
   </div>
 </body>
 </html>
