@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventario de Productos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background-color: #f7f7f7;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 30px;
+      color: #333;
+    }
+    table {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto 30px;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+    }
+    th {
+      background-color: #f2b632;
+      color: #333;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <h1>📦 Inventario de Productos</h1>
+
+  <table id="tabla-inventario">
+    <thead>
+      <tr>
+        <th>ID Producto</th>
+        <th>Nombre</th>
+        <th>Categoría</th>
+        <th>Cantidad</th>
+        <th>Unidad</th>
+        <th>Última Actualización</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Filas del inventario se llenarán dinámicamente -->
+    </tbody>
+  </table>
+
+  <button onclick="cargarInventario()">🔄 Actualizar Inventario</button>
+
+  <script>
+    async function cargarInventario() {
+      const tabla = document.querySelector('#tabla-inventario tbody');
+      tabla.innerHTML = '<tr><td colspan="6">Cargando...</td></tr>';
+
+      try {
+        const res = await fetch('/inventario');
+        const inventario = await res.json();
+
+        if (inventario.length === 0) {
+          tabla.innerHTML = '<tr><td colspan="6">No hay datos disponibles</td></tr>';
+          return;
+        }
+
+        tabla.innerHTML = '';
+        inventario.forEach(item => {
+          const fila = `
+            <tr>
+              <td>${item.id_producto}</td>
+              <td>${item.nombre}</td>
+              <td>${item.categoria}</td>
+              <td>${item.cantidad}</td>
+              <td>${item.unidad_medida}</td>
+              <td>${formatearFecha(item.ultima_actualizacion)}</td>
+            </tr>
+          `;
+          tabla.innerHTML += fila;
+        });
+
+      } catch (error) {
+        console.error('Error cargando inventario:', error);
+        tabla.innerHTML = '<tr><td colspan="6">Error al cargar inventario</td></tr>';
+      }
+    }
+
+    function formatearFecha(fecha) {
+      const f = new Date(fecha);
+      return f.toLocaleDateString('es-PE');
+    }
+
+    window.onload = cargarInventario;
+  </script>
+</body>
+</html>
