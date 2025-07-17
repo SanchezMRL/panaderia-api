@@ -38,7 +38,7 @@ mongoClient.connect()
 
 // 🌐 Ruta base
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html'); // Servir página de inicio
+  res.sendFile(__dirname + '/public/inicio.html'); // Servir página de inicio
 });
 
 // 📦 Pedido Cliente + detalles + opinión
