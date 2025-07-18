@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard de Opiniones - Panadería</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --color-amarillo: #F9D923;
+      --color-azul: #0A2F66;
+      --color-azul-claro: #E8F1FA;
+      --color-hover: #FFD43B;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, var(--color-azul-claro), #fff);
+      margin: 0;
+      padding: 0;
+      color: var(--color-azul);
+    }
+
+    header {
+      background-color: var(--color-azul);
+      padding: 30px 20px;
+      text-align: center;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    header h1 {
+      font-size: 42px;
+      margin: 0;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .grafico-container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 40px;
+      border: 3px solid var(--color-amarillo);
+    }
+
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+      max-height: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      margin: 50px 0 20px;
+      color: var(--color-azul);
+      font-size: 28px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border: 3px solid var(--color-amarillo);
+    }
+
+    th, td {
+      padding: 14px;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    thead {
+      background-color: var(--color-azul);
+      color: white;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: var(--color-azul-claro);
+    }
+
+    tbody tr:hover {
+      background-color: var(--color-hover);
+      transition: all 0.3s ease;
+    }
+
+    #mensaje {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 18px;
+      color: #d32f2f;
+      background-color: white;
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid var(--color-amarillo);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🍞 Opiniones de Productos - Panadería</h1>
+  </header>
+
+  <main>
+    <div id="mensaje"></div>
+
+    <div class="grafico-container">
+      <canvas id="graficoPromedio"></canvas>
+    </div>
+
+    <h2>Opiniones Individuales</h2>
+    <table id="tablaOpiniones">
+      <thead>
+        <tr>
+          <th>ID Pedido</th>
+          <th>Comentario</th>
+          <th>Calificación</th>
+          <th>Satisfacción</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </main>
+
+  <script>
+    async function cargarDashboard() {
+      try {
+        const res = await fetch('/dashboard/opiniones');
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+          document.getElementById('mensaje').textContent = '⚠️ No hay opiniones registradas aún.';
+          return;
+        }
+
+        const labels = data.map(item => item.nombre);
+        const calificaciones = data.map(item => parseFloat(item.promedio));
+        const satisfacciones = data.map(item => parseFloat(item.satisfaccion));
+
+        new Chart(document.getElementById('graficoPromedio'), {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Calificación',
+                data: calificaciones,
+                backgroundColor: 'rgba(249, 217, 35, 0.7)',
+                borderColor: 'rgba(249, 217, 35, 1)',
+                borderWidth: 1
+              },
+              {
+                label: 'Satisfacción',
+                data: satisfacciones,
+                backgroundColor: 'rgba(10, 47, 102, 0.6)',
+                borderColor: 'rgba(10, 47, 102, 1)',
+                borderWidth: 1
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 5,
+                ticks: {
+                  stepSize: 1
+                }
+              }
+            }
+          }
+        });
+
+      } catch (err) {
+        console.error('❌ Error al cargar el dashboard:', err);
+        document.getElementById('mensaje').textContent = '❌ Error al cargar el dashboard';
+      }
+    }
+
+    async function cargarTabla() {
+      try {
+        const res = await fetch('/opiniones');
+        const data = await res.json();
+
+        const tbody = document.querySelector('#tablaOpiniones tbody');
+        tbody.innerHTML = '';
+
+        if (!Array.isArray(data) || data.length === 0) {
+          const fila = document.createElement('tr');
+          fila.innerHTML = `<td colspan="5">No hay opiniones registradas.</td>`;
+          tbody.appendChild(fila);
+          return;
+        }
+
+        data.forEach(op => {
+          const fila = document.createElement('tr');
+          fila.innerHTML = `
+            <td>${op.id_pedido_cliente}</td>
+            <td>${op.comentario}</td>
+            <td>${op.calificacion}</td>
+            <td>${op.satisfaccion}</td>
+            <td>${new Date(op.fecha).toLocaleDateString()}</td>
+          `;
+          tbody.appendChild(fila);
+        });
+      } catch (err) {
+        console.error('❌ Error al cargar opiniones:', err);
+        document.getElementById('mensaje').textContent += ' ❌ Error al cargar tabla de opiniones';
+      }
+    }
+
+    cargarDashboard();
+    cargarTabla();
+  </script>
+</body>
+</html>

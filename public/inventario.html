@@ -2,83 +2,142 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Inventario de Productos</title>
+  <title>Inventario de Productos - Panadería</title>
   <style>
+    :root {
+      --color-amarillo: #F9D923;
+      --color-azul: #0A2F66;
+      --color-azul-claro: #E8F1FA;
+      --color-hover: #FFD43B;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      padding: 40px;
-      background-color: #f7f7f7;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, var(--color-azul-claro), #fff);
+      margin: 0;
+      padding: 0;
+      color: var(--color-azul);
+    }
+
+    header {
+      background-color: var(--color-azul);
+      color: white;
+      padding: 30px 20px;
       text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
-    h1 {
-      margin-bottom: 30px;
-      color: #333;
+
+    header h1 {
+      font-size: 36px;
+      margin: 0;
     }
+
+    main {
+      padding: 40px;
+      text-align: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
     table {
       width: 100%;
-      max-width: 900px;
-      margin: 0 auto 30px;
       border-collapse: collapse;
-      background-color: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      background-color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      border: 2px solid var(--color-amarillo);
+      border-radius: 10px;
+      overflow: hidden;
     }
+
     th, td {
-      padding: 12px 15px;
-      border: 1px solid #ddd;
+      padding: 14px 16px;
+      text-align: center;
     }
+
     th {
-      background-color: #f2b632;
-      color: #333;
-    }
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #28a745;
+      background-color: var(--color-azul);
       color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
+      font-size: 16px;
     }
+
+    tr:nth-child(even) {
+      background-color: var(--color-azul-claro);
+    }
+
+    tr:hover {
+      background-color: var(--color-hover);
+    }
+
+    button {
+      padding: 14px 28px;
+      background-color: var(--color-azul);
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
     button:hover {
-      background-color: #218838;
+      background-color: var(--color-hover);
+      color: var(--color-azul);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .mensaje {
+      font-style: italic;
+      color: var(--color-azul);
+      padding: 20px;
+      font-size: 16px;
     }
   </style>
 </head>
 <body>
-  <h1>📦 Inventario de Productos</h1>
+  <header>
+    <h1>🍞 Inventario de Productos - Panadería</h1>
+  </header>
 
-  <table id="tabla-inventario">
-    <thead>
-      <tr>
-        <th>ID Producto</th>
-        <th>Nombre</th>
-        <th>Categoría</th>
-        <th>Cantidad</th>
-        <th>Unidad</th>
-        <th>Última Actualización</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Filas del inventario se llenarán dinámicamente -->
-    </tbody>
-  </table>
+  <main>
+    <table id="tabla-inventario">
+      <thead>
+        <tr>
+          <th>ID Producto</th>
+          <th>Nombre</th>
+          <th>Categoría</th>
+          <th>Cantidad</th>
+          <th>Unidad</th>
+          <th>Última Actualización</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="6" class="mensaje">🔄 Esperando datos...</td></tr>
+      </tbody>
+    </table>
 
-  <button onclick="cargarInventario()">🔄 Actualizar Inventario</button>
+    <button onclick="cargarInventario()">🔄 Actualizar Inventario</button>
+  </main>
 
   <script>
     async function cargarInventario() {
       const tabla = document.querySelector('#tabla-inventario tbody');
-      tabla.innerHTML = '<tr><td colspan="6">Cargando...</td></tr>';
+      tabla.innerHTML = '<tr><td colspan="6" class="mensaje">🔄 Cargando datos del inventario...</td></tr>';
 
       try {
         const res = await fetch('/inventario');
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status} - ${res.statusText}`);
+        }
+
         const inventario = await res.json();
 
-        if (inventario.length === 0) {
-          tabla.innerHTML = '<tr><td colspan="6">No hay datos disponibles</td></tr>';
+        if (!Array.isArray(inventario) || inventario.length === 0) {
+          tabla.innerHTML = '<tr><td colspan="6" class="mensaje">❌ No hay productos en el inventario</td></tr>';
           return;
         }
 
@@ -98,12 +157,13 @@
         });
 
       } catch (error) {
-        console.error('Error cargando inventario:', error);
-        tabla.innerHTML = '<tr><td colspan="6">Error al cargar inventario</td></tr>';
+        console.error('Error al cargar inventario:', error);
+        tabla.innerHTML = `<tr><td colspan="6" class="mensaje">❌ Error al cargar inventario: ${error.message}</td></tr>`;
       }
     }
 
     function formatearFecha(fecha) {
+      if (!fecha) return "Sin fecha";
       const f = new Date(fecha);
       return f.toLocaleDateString('es-PE');
     }

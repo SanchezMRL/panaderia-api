@@ -2,16 +2,154 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Registrar Pedido</title>
+  <title>Registrar Pedido - Panadería</title>
   <style>
-    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
-    .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    input, textarea, select, button { margin: 5px 0; padding: 8px; width: 100%; }
-    #opinionCampos { display: none; }
+    :root {
+      --color-amarillo: #F9D923;
+      --color-azul: #0A2F66;
+      --color-azul-claro: #E8F1FA;
+      --color-hover: #FFD43B;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, var(--color-azul-claro), #fff);
+      margin: 0;
+      padding: 0;
+      color: var(--color-azul);
+    }
+
+    header {
+      background-color: var(--color-azul);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      background-color: var(--color-azul);
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 25px 0;
+      font-size: 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .card {
+      background-color: white;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      border: 3px solid var(--color-amarillo);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: var(--color-azul);
+      font-size: 16px;
+    }
+
+    input, textarea, select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--color-azul);
+      box-shadow: 0 0 5px rgba(10, 47, 102, 0.3);
+    }
+
+    button {
+      background-color: var(--color-azul);
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      margin-top: 25px;
+      transition: all 0.3s ease;
+      padding: 14px;
+      font-size: 18px;
+    }
+
+    button:hover {
+      background-color: var(--color-hover);
+      color: var(--color-azul);
+      transform: translateY(-2px);
+    }
+
+    #opinionCampos, #observacionesCampo, #pagoCampos {
+      margin-top: 25px;
+      display: none;
+      background-color: var(--color-azul-claro);
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid var(--color-amarillo);
+    }
+
+    #listaDetalles {
+      margin-top: 20px;
+      padding-left: 20px;
+      color: var(--color-azul);
+    }
+
+    #mensaje {
+      margin-top: 25px;
+      font-weight: bold;
+      color: #2e7d32;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    h4 {
+      color: var(--color-azul);
+      margin-top: 30px;
+      margin-bottom: 15px;
+      font-size: 20px;
+      border-bottom: 2px solid var(--color-amarillo);
+      padding-bottom: 8px;
+    }
+
+    .pago-row {
+      display: flex;
+      gap: 15px;
+    }
+
+    .pago-row > div {
+      flex: 1;
+    }
+
+    .producto-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .producto-row > div {
+      flex: 2;
+    }
+
+    .producto-row > input {
+      flex: 1;
+    }
   </style>
 </head>
 <body>
-  <h2>Registrar Pedido</h2>
+  <header>
+    <h1>🍞 Registrar Pedido - Panadería</h1>
+  </header>
+  
   <div class="card">
     <form id="formPedido">
       <label>Tipo de pedido:</label>
@@ -25,14 +163,56 @@
         <input id="id_empleado" placeholder="ID Empleado" required type="number">
         <input id="fecha" required type="date">
         <input id="estado" placeholder="Estado" required>
+
+        <div id="observacionesCampo">
+          <textarea id="observaciones" placeholder="Observaciones del pedido (solo proveedor)"></textarea>
+        </div>
       </div>
 
       <h4>Agregar Producto</h4>
-      <input id="id_producto" placeholder="ID Producto" type="number">
-      <input id="cantidad" placeholder="Cantidad" type="number">
-      <input id="precio_unitario" placeholder="Precio o Coste Unitario" step="0.01" type="number">
+      <div class="producto-row">
+        <div>
+          <input id="id_producto" placeholder="ID Producto" type="number">
+          <input id="nombre_producto" placeholder="Nombre Producto" readonly>
+        </div>
+        <input id="cantidad" placeholder="Cantidad" type="number" min="1">
+        <input id="precio_unitario" placeholder="Precio o Coste Unitario" step="0.01" type="number">
+      </div>
       <button type="button" onclick="agregar()">Agregar Detalle</button>
       <ul id="listaDetalles"></ul>
+
+      <div id="pagoCampos">
+        <h4>Datos de Pago (solo clientes)</h4>
+        <div class="pago-row">
+          <div>
+            <label>Método de pago:</label>
+            <select id="metodo_pago">
+              <option value="efectivo">efectivo</option>
+              <option value="tarjeta">Tarjeta</option>
+              <option value="transferencia">Transferencia</option>
+              <option value="cheque">Cheque</option>
+            </select>
+          </div>
+          <div>
+            <label>Monto total:</label>
+            <input id="monto_total" type="number" step="0.01" readonly>
+          </div>
+        </div>
+        <div class="pago-row">
+          <div>
+            <label>Fecha de pago:</label>
+            <input id="fecha_pago" type="date">
+          </div>
+          <div>
+            <label>Estado de pago:</label>
+            <select id="estado_pago">
+              <option value="pendiente">Pendiente</option>
+              <option value="completado">Completado</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
       <div id="opinionCampos">
         <h4>Opinión del cliente</h4>
@@ -48,29 +228,106 @@
 
   <script>
     let detalles = [];
+    let totalPedido = 0;
+    let precioBaseActual = 0;
 
-    document.getElementById('tipoPedido').addEventListener('change', () => {
+    // Función para mostrar/ocultar secciones según tipo de pedido
+    function actualizarSecciones() {
       const tipo = document.getElementById('tipoPedido').value;
-      const opinionDiv = document.getElementById('opinionCampos');
-      opinionDiv.style.display = tipo === 'cliente' ? 'block' : 'none';
+      document.getElementById('opinionCampos').style.display = tipo === 'cliente' ? 'block' : 'none';
+      document.getElementById('pagoCampos').style.display = tipo === 'cliente' ? 'block' : 'none';
+      document.getElementById('observacionesCampo').style.display = tipo === 'proveedor' ? 'block' : 'none';
+    }
+
+    // Configurar eventos al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inicializar las secciones visibles
+      actualizarSecciones();
+      
+      // Configurar evento para cambiar tipo de pedido
+      document.getElementById('tipoPedido').addEventListener('change', actualizarSecciones);
+    });
+
+    // Cargar producto cuando se ingresa ID
+    document.getElementById('id_producto').addEventListener('change', async function() {
+      const idProducto = this.value;
+      if (!idProducto) return;
+
+      try {
+        const response = await fetch(`http://localhost:3000/producto/${idProducto}`);
+        const producto = await response.json();
+
+        if (producto.error) {
+          alert(producto.error);
+          return;
+        }
+
+        document.getElementById('nombre_producto').value = producto.nombre;
+        precioBaseActual = producto.precio_base;
+        
+        // Mostrar precio o coste según tipo de pedido
+        const tipo = document.getElementById('tipoPedido').value;
+        const precioUnitario = document.getElementById('precio_unitario');
+        
+        if (tipo === 'cliente') {
+          precioUnitario.value = precioBaseActual.toFixed(2);
+        } else {
+          // Para proveedores, usar el 80% del precio base como coste
+          precioUnitario.value = (precioBaseActual * 0.8).toFixed(2);
+        }
+
+      } catch (error) {
+        console.error('Error al cargar producto:', error);
+        alert('Error al cargar producto');
+      }
+    });
+
+    // Actualizar el precio cuando cambia el tipo de pedido
+    document.getElementById('tipoPedido').addEventListener('change', function() {
+      const idProducto = document.getElementById('id_producto').value;
+      if (idProducto && precioBaseActual > 0) {
+        const tipo = this.value;
+        const precioUnitario = document.getElementById('precio_unitario');
+        
+        if (tipo === 'cliente') {
+          precioUnitario.value = precioBaseActual.toFixed(2);
+        } else {
+          precioUnitario.value = (precioBaseActual * 0.8).toFixed(2);
+        }
+      }
     });
 
     function agregar() {
+      const tipo = document.getElementById('tipoPedido').value;
       const id_producto = parseInt(document.getElementById('id_producto').value);
       const cantidad = parseInt(document.getElementById('cantidad').value);
       const precio_unitario = parseFloat(document.getElementById('precio_unitario').value);
 
-      if (!id_producto || !cantidad || !precio_unitario) {
-        alert("Completa todos los campos del producto");
+      if (!id_producto || !cantidad || cantidad <= 0 || isNaN(precio_unitario)) {
+        alert("Debe completar todos los campos del producto con valores válidos");
         return;
       }
 
-      detalles.push({ id_producto, cantidad, precio_unitario });
+      const detalle = { id_producto, cantidad };
+      if (tipo === 'cliente') {
+        detalle.precio_unitario = precio_unitario;
+        totalPedido += cantidad * precio_unitario;
+      } else {
+        detalle.coste_unitario = precio_unitario;
+      }
+
+      detalles.push(detalle);
 
       const item = document.createElement('li');
-      item.textContent = `Producto ${id_producto}: ${cantidad} x S/.${precio_unitario.toFixed(2)}`;
+      item.textContent = `Producto ${id_producto} (${document.getElementById('nombre_producto').value}): ${cantidad} x S/.${precio_unitario.toFixed(2)}`;
       document.getElementById('listaDetalles').appendChild(item);
 
+      // Actualizar monto total si es pedido de cliente
+      if (tipo === 'cliente') {
+        document.getElementById('monto_total').value = totalPedido.toFixed(2);
+      }
+
+      // Limpiar campos de producto (excepto nombre)
       document.getElementById('id_producto').value = '';
       document.getElementById('cantidad').value = '';
       document.getElementById('precio_unitario').value = '';
@@ -83,6 +340,7 @@
       const id_empleado = parseInt(document.getElementById('id_empleado').value);
       const fecha = document.getElementById('fecha').value;
       const estado = document.getElementById('estado').value;
+      const observaciones = document.getElementById('observaciones').value;
 
       if (detalles.length === 0) {
         alert("Agrega al menos un producto");
@@ -96,40 +354,71 @@
         detalles
       };
 
-      const endpoint = tipo === 'cliente' ? 'pedido/cliente' : 'pedido/proveedor';
-      if (tipo === 'cliente') pedido.id_cliente = id_persona;
-      else pedido.id_proveedor = id_persona;
+      let endpoint;
+
+      if (tipo === 'cliente') {
+        pedido.id_cliente = id_persona;
+        endpoint = 'pedido/cliente';
+      } else {
+        pedido.id_proveedor = id_persona;
+        pedido.observaciones = observaciones;
+        endpoint = 'pedido/proveedor';
+      }
 
       try {
-        const res = await fetch(`http://localhost:3000/${endpoint}`, {
+        // Registrar el pedido
+        const resPedido = await fetch(`http://localhost:3000/${endpoint}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(pedido)
         });
 
-        const data = await res.json();
+        const dataPedido = await resPedido.json();
 
         if (tipo === 'cliente') {
+          // Registrar el pago
+          const pago = {
+            id_pedido_cliente: dataPedido.id_pedido_cliente,
+            metodo: document.getElementById('metodo_pago').value,
+            monto: totalPedido,
+            fecha: document.getElementById('fecha_pago').value || fecha,
+            estado: document.getElementById('estado_pago').value
+          };
+
+          await fetch('http://localhost:3000/pago', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(pago)
+          });
+
+          // Registrar opinión si existe
           const opinion = {
-            id_pedido_cliente: data.id_pedido_cliente,
+            id_pedido_cliente: dataPedido.id_pedido_cliente,
             comentario: document.getElementById('comentario').value,
             calificacion: parseInt(document.getElementById('calificacion').value),
             satisfaccion: parseInt(document.getElementById('satisfaccion').value),
             fecha: new Date().toISOString()
           };
 
-          await fetch('http://localhost:3000/opinion', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(opinion)
-          });
+          if (opinion.comentario || !isNaN(opinion.calificacion) || !isNaN(opinion.satisfaccion)) {
+            await fetch('http://localhost:3000/opinion', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(opinion)
+            });
+          }
         }
 
+        // Limpiar formulario
         document.getElementById('formPedido').reset();
         document.getElementById('listaDetalles').innerHTML = '';
         detalles = [];
+        totalPedido = 0;
+        precioBaseActual = 0;
         document.getElementById('mensaje').textContent = '✅ Pedido registrado correctamente';
         document.getElementById('opinionCampos').style.display = 'none';
+        document.getElementById('pagoCampos').style.display = 'none';
+        document.getElementById('observacionesCampo').style.display = 'none';
 
       } catch (err) {
         console.error(err);

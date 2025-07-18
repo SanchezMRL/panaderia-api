@@ -2,47 +2,146 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Consultar Pedido</title>
+  <title>Consultar Pedido - Panadería</title>
   <style>
-    body { font-family: Arial; padding: 20px; background: #f0f0f0; }
-    .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    label, select, input, button { margin: 10px 5px; padding: 8px; }
+    :root {
+      --color-amarillo: #F9D923;
+      --color-azul: #0A2F66;
+      --color-azul-claro: #E8F1FA;
+      --color-hover: #FFD43B;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, var(--color-azul-claro), #fff);
+      margin: 0;
+      padding: 0;
+      color: var(--color-azul);
+    }
+
+    header {
+      background-color: var(--color-azul);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 32px;
+    }
+
+    .contenedor {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border: 3px solid var(--color-amarillo);
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: bold;
+      color: var(--color-azul);
+      font-size: 16px;
+    }
+
+    select, input[type="number"], button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: var(--color-azul);
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 25px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      padding: 14px;
+    }
+
+    button:hover {
+      background-color: var(--color-hover);
+      color: var(--color-azul);
+      transform: translateY(-2px);
+    }
+
+    #resultado {
+      margin-top: 30px;
+      background-color: var(--color-azul-claro);
+      border: 2px solid var(--color-amarillo);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    strong {
+      color: var(--color-azul);
+    }
+
+    h3 {
+      color: var(--color-azul);
+      border-bottom: 2px solid var(--color-amarillo);
+      padding-bottom: 8px;
+      margin-top: 0;
+    }
   </style>
 </head>
 <body>
-  <h2>Consultar Pedido</h2>
-  <div class="card">
-    <label>Tipo de Pedido:</label>
+  <header>
+    <h1>🍞 Consulta de Pedido - Panadería</h1>
+  </header>
+
+  <div class="contenedor">
+    <label for="tipoPedido">Tipo de Pedido:</label>
     <select id="tipoPedido">
       <option value="cliente">Cliente</option>
       <option value="proveedor">Proveedor</option>
     </select>
-    <label>ID:</label>
+
+    <label for="pedidoId">ID:</label>
     <input type="number" id="pedidoId" min="1">
+
     <button onclick="buscar()">Buscar</button>
-    <div id="resultado" style="margin-top:20px;"></div>
+
+    <div id="resultado"></div>
   </div>
 
   <script>
-    // ⚠️ Usa tu URL de Render
-    const API_URL = 'https://panaderia-api.onrender.com';
-
     async function buscar() {
       const tipo = document.getElementById('tipoPedido').value;
       const id = document.getElementById('pedidoId').value;
       const div = document.getElementById('resultado');
-      div.innerHTML = "🔍 Buscando...";
+      div.innerHTML = "Buscando...";
 
       try {
-        const res = await fetch(`${API_URL}/pedido/${tipo}/${id}`);
+        const res = await fetch(`http://localhost:3000/pedido/${tipo}/${id}`);
         const data = await res.json();
-
         if (!data || !data.pedido) {
-          div.innerHTML = "❌ Pedido no encontrado.";
+          div.innerHTML = "Pedido no encontrado.";
           return;
         }
 
-        let html = `<h3>Pedido de ${tipo}</h3><ul>`;
+        let html = `<h3>Pedido (${tipo})</h3><ul>`;
         html += `<li><strong>Fecha:</strong> ${data.pedido.fecha}</li>`;
         html += `<li><strong>Estado:</strong> ${data.pedido.estado}</li>`;
         html += `<li><strong>Empleado:</strong> ${data.pedido.empleado_nombre}</li>`;
@@ -55,21 +154,23 @@
 
         html += `<li><strong>Productos:</strong><ul>`;
         data.pedido.detalles.forEach(p => {
-          const precio = (p.precio_unitario || p.coste_unitario || 0).toFixed(2);
-          html += `<li>${p.producto_nombre} - ${p.cantidad} x S/.${precio}</li>`;
+          const precio = p.precio_unitario ?? p.coste_unitario ?? 0;
+          html += `<li>${p.producto_nombre} - ${p.cantidad} x S/.${precio.toFixed(2)}</li>`;
         });
         html += `</ul></li>`;
 
-        if (data.opinion) {
+        if (tipo === "cliente" && data.opinion) {
           html += `<li><strong>Opinión:</strong> ${data.opinion.comentario} (⭐${data.opinion.calificacion}/5)</li>`;
+          html += `<li><strong>Satisfacción:</strong> ${data.opinion.satisfaccion}/5</li>`;
+          html += `<li><strong>Fecha de opinión:</strong> ${data.opinion.fecha}</li>`;
         }
 
         html += `</ul>`;
         div.innerHTML = html;
 
       } catch (e) {
-        console.error('❌ Error al consultar:', e);
-        div.innerHTML = "❌ Error al consultar el pedido.";
+        console.error(e);
+        div.innerHTML = "Error al consultar.";
       }
     }
   </script>

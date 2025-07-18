@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Agregar Cliente/Proveedor - Panadería</title>
+  <style>
+    :root {
+      --color-amarillo: #F9D923;
+      --color-azul: #0A2F66;
+      --color-azul-claro: #E8F1FA;
+      --color-hover: #FFD43B;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, var(--color-azul-claro), #fff);
+      margin: 0;
+      padding: 0;
+      color: var(--color-azul);
+    }
+
+    header {
+      background-color: var(--color-azul);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .card {
+      background-color: white;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      border: 3px solid var(--color-amarillo);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: var(--color-azul);
+      font-size: 16px;
+    }
+
+    input, textarea, select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--color-azul);
+      box-shadow: 0 0 5px rgba(10, 47, 102, 0.3);
+    }
+
+    button {
+      background-color: var(--color-azul);
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      margin-top: 25px;
+      transition: all 0.3s ease;
+      padding: 14px;
+      font-size: 18px;
+    }
+
+    button:hover {
+      background-color: var(--color-hover);
+      color: var(--color-azul);
+      transform: translateY(-2px);
+    }
+
+    #mensaje {
+      margin-top: 25px;
+      font-weight: bold;
+      color: #2e7d32;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .volver {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: var(--color-azul);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .volver:hover {
+      background-color: var(--color-hover);
+      color: var(--color-azul);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🍞 Agregar Cliente o Proveedor - Panadería</h1>
+  </header>
+  
+  <div class="card">
+    <form id="formAgregar">
+      <label>Tipo de registro:</label>
+      <select id="tipoRegistro" required>
+        <option value="">Seleccione...</option>
+        <option value="cliente">Cliente</option>
+        <option value="proveedor">Proveedor</option>
+      </select>
+
+      <div id="camposComunes">
+        <label>Nombre completo:</label>
+        <input id="nombre" placeholder="Nombre completo" required>
+
+        <label>Dirección:</label>
+        <input id="direccion" placeholder="Dirección completa">
+
+        <label>Teléfono:</label>
+        <input id="telefono" placeholder="Número de teléfono" type="tel">
+
+        <label>Correo electrónico:</label>
+        <input id="email" placeholder="correo@ejemplo.com" type="email">
+      </div>
+
+      <button type="submit">Registrar</button>
+      <p id="mensaje"></p>
+    </form>
+
+    <a href="index.html" class="volver">← Volver al Inicio</a>
+  </div>
+
+  <script>
+    document.getElementById('formAgregar').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const tipo = document.getElementById('tipoRegistro').value;
+      const nombre = document.getElementById('nombre').value;
+      const direccion = document.getElementById('direccion').value;
+      const telefono = document.getElementById('telefono').value;
+      const email = document.getElementById('email').value;
+
+      if (!tipo) {
+        alert("Seleccione el tipo de registro");
+        return;
+      }
+
+      const datos = {
+        nombre,
+        direccion,
+        telefono,
+        email
+      };
+
+      try {
+        let endpoint;
+        if (tipo === 'cliente') {
+          endpoint = 'http://localhost:3000/cliente';
+        } else {
+          endpoint = 'http://localhost:3000/proveedor';
+        }
+
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(datos)
+        });
+
+        const resultado = await response.json();
+
+        if (response.ok) {
+          document.getElementById('mensaje').textContent = tipo === 'cliente' 
+            ? '✅ Cliente registrado correctamente' 
+            : '✅ Proveedor registrado correctamente';
+          
+          // Limpiar formulario
+          document.getElementById('formAgregar').reset();
+          
+          // Mostrar ID generado
+          setTimeout(() => {
+            const idGenerado = tipo === 'cliente' ? resultado.id_cliente : resultado.id_proveedor;
+            document.getElementById('mensaje').textContent += ` | ID Generado: ${idGenerado}`;
+          }, 1000);
+        } else {
+          throw new Error(resultado.error || 'Error en el registro');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('mensaje').textContent = '❌ Error al registrar: ' + error.message;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reportes de Ventas - Panadería</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --color-amarillo: #F9D923;
+      --color-azul: #0A2F66;
+      --color-azul-claro: #E8F1FA;
+      --color-hover: #FFD43B;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, var(--color-azul-claro), #fff);
+      color: var(--color-azul);
+    }
+
+    h1 {
+      font-weight: bold;
+      color: var(--color-azul);
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .card {
+      border-radius: 15px;
+      border: 3px solid var(--color-amarillo);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      background-color: white;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+
+    .card-title {
+      font-weight: 600;
+      color: var(--color-azul);
+    }
+
+    #montoTotal {
+      color: var(--color-amarillo);
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+      font-size: 2rem;
+    }
+
+    #cantidadPedidos {
+      color: var(--color-azul);
+      font-weight: bold;
+      font-size: 2rem;
+    }
+
+    #clientesUnicos {
+      color: #20c997;
+      font-weight: bold;
+      font-size: 2rem;
+    }
+
+    .container {
+      max-width: 1200px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <h1 class="mb-5 text-center">🍞 Reportes Generales de la Panadería</h1>
+
+    <!-- Total Ventas y Total Pedidos -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body text-center">
+            <h4 class="card-title">💰 Total Acumulado de Ventas</h4>
+            <p id="montoTotal" class="fs-2">Cargando...</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body text-center">
+            <h4 class="card-title">🧾 Total de Pedidos</h4>
+            <p id="cantidadPedidos" class="fs-2">Cargando...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clientes Atendidos y Métodos de Pago -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body text-center">
+            <h4 class="card-title">👥 Clientes Atendidos</h4>
+            <p id="clientesUnicos" class="fs-2">Cargando...</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title text-center">💳 Métodos de Pago Más Usados</h4>
+            <canvas id="graficoMetodos" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function cargarReportes() {
+      try {
+        const [ventasRes, metodosRes, pedidosRes, clientesRes] = await Promise.all([
+          fetch("/api/reportes/total_ventas"),
+          fetch("/api/reportes/metodos_pago"),
+          fetch("/api/reportes/total_pedidos"),
+          fetch("/api/reportes/clientes_atendidos")
+        ]);
+
+        const totalVentas = await ventasRes.json();
+        const metodosPago = await metodosRes.json();
+        const totalPedidos = await pedidosRes.json();
+        const clientesAtendidos = await clientesRes.json();
+
+        document.getElementById("montoTotal").textContent = "S/ " + parseFloat(totalVentas.total_ventas).toFixed(2);
+        document.getElementById("cantidadPedidos").textContent = totalPedidos.total_pedidos;
+        document.getElementById("clientesUnicos").textContent = clientesAtendidos.clientes_atendidos;
+
+        const ctx = document.getElementById("graficoMetodos").getContext("2d");
+        const etiquetas = metodosPago.map(item => item.metodo);
+        const datos = metodosPago.map(item => item.cantidad_usos);
+
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: etiquetas,
+            datasets: [{
+              label: "Cantidad de Usos",
+              data: datos,
+              backgroundColor: [
+                "#0A2F66", "#F9D923", "#20c997", "#6610f2", "#dc3545"
+              ],
+              borderColor: "#dee2e6",
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+
+      } catch (error) {
+        console.error("Error al cargar reportes:", error);
+      }
+    }
+
+    cargarReportes();
+  </script>
+</body>
+</html>
