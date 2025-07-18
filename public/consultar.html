@@ -134,7 +134,7 @@
       div.innerHTML = "Buscando...";
 
       try {
-        const res = await fetch(`http://localhost:3000/pedido/${tipo}/${id}`);
+        const res = await fetch(`https://panaderia-api.onrender.com/pedido/${tipo}/${id}`);
         const data = await res.json();
         if (!data || !data.pedido) {
           div.innerHTML = "Pedido no encontrado.";
