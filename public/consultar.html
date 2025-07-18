@@ -128,51 +128,52 @@
 
   <script>
     async function buscar() {
-      const tipo = document.getElementById('tipoPedido').value;
-      const id = document.getElementById('pedidoId').value;
-      const div = document.getElementById('resultado');
-      div.innerHTML = "Buscando...";
+  const tipo = document.getElementById('tipoPedido').value;
+  const id = document.getElementById('pedidoId').value;
+  const div = document.getElementById('resultado');
+  div.innerHTML = "Buscando...";
 
-      try {
-        const res = await fetch(`https://panaderia-api.onrender.com/pedido/${tipo}/${id}`);
-        const data = await res.json();
-        if (!data || !data.pedido) {
-          div.innerHTML = "Pedido no encontrado.";
-          return;
-        }
+  try {
+    const res = await fetch(`https://panaderia-api.onrender.com/pedido/${tipo}/${id}`);
+    const data = await res.json();
 
-        let html = `<h3>Pedido (${tipo})</h3><ul>`;
-        html += `<li><strong>Fecha:</strong> ${data.pedido.fecha}</li>`;
-        html += `<li><strong>Estado:</strong> ${data.pedido.estado}</li>`;
-        html += `<li><strong>Empleado:</strong> ${data.pedido.empleado_nombre}</li>`;
-
-        if (tipo === "cliente") {
-          html += `<li><strong>Cliente:</strong> ${data.pedido.cliente_nombre}</li>`;
-        } else {
-          html += `<li><strong>Proveedor:</strong> ${data.pedido.proveedor_nombre}</li>`;
-        }
-
-        html += `<li><strong>Productos:</strong><ul>`;
-        data.pedido.detalles.forEach(p => {
-          const precio = p.precio_unitario ?? p.coste_unitario ?? 0;
-          html += `<li>${p.producto_nombre} - ${p.cantidad} x S/.${precio.toFixed(2)}</li>`;
-        });
-        html += `</ul></li>`;
-
-        if (tipo === "cliente" && data.opinion) {
-          html += `<li><strong>Opinión:</strong> ${data.opinion.comentario} (⭐${data.opinion.calificacion}/5)</li>`;
-          html += `<li><strong>Satisfacción:</strong> ${data.opinion.satisfaccion}/5</li>`;
-          html += `<li><strong>Fecha de opinión:</strong> ${data.opinion.fecha}</li>`;
-        }
-
-        html += `</ul>`;
-        div.innerHTML = html;
-
-      } catch (e) {
-        console.error(e);
-        div.innerHTML = "Error al consultar.";
-      }
+    if (!data || !data.pedido) {
+      div.innerHTML = "Pedido no encontrado.";
+      return;
     }
+
+    let html = `<h3>Pedido (${tipo})</h3><ul>`;
+    html += `<li><strong>Fecha:</strong> ${data.pedido.fecha}</li>`;
+    html += `<li><strong>Estado:</strong> ${data.pedido.estado}</li>`;
+    html += `<li><strong>Empleado:</strong> ${data.pedido.empleado_nombre}</li>`;
+
+    if (tipo === "cliente") {
+      html += `<li><strong>Cliente:</strong> ${data.pedido.cliente_nombre}</li>`;
+    } else {
+      html += `<li><strong>Proveedor:</strong> ${data.pedido.proveedor_nombre}</li>`;
+    }
+
+    html += `<li><strong>Productos:</strong><ul>`;
+    data.pedido.detalles.forEach(p => {
+      const precio = p.precio_unitario ?? p.coste_unitario ?? 0;
+      html += `<li>${p.producto_nombre} - ${p.cantidad} x S/.${precio.toFixed(2)}</li>`;
+    });
+    html += `</ul></li>`;
+
+    if (tipo === "cliente" && data.opinion) {
+      html += `<li><strong>Opinión:</strong> ${data.opinion.comentario} (⭐${data.opinion.calificacion}/5)</li>`;
+      html += `<li><strong>Satisfacción:</strong> ${data.opinion.satisfaccion}/5</li>`;
+      html += `<li><strong>Fecha de opinión:</strong> ${data.opinion.fecha}</li>`;
+    }
+
+    html += `</ul>`;
+    div.innerHTML = html;
+
+  } catch (e) {
+    console.error(e);
+    div.innerHTML = "Error al consultar.";
+  }
+}
   </script>
 </body>
 </html>
