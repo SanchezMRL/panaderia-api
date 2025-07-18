@@ -254,7 +254,7 @@
       if (!idProducto) return;
 
       try {
-        const response = await fetch(`http://localhost:3000/producto/${idProducto}`);
+        const response = await fetch(`https://panaderia-api.onrender.com/producto/${idProducto}`);
         const producto = await response.json();
 
         if (producto.error) {
@@ -367,7 +367,7 @@
 
       try {
         // Registrar el pedido
-        const resPedido = await fetch(`http://localhost:3000/${endpoint}`, {
+        const resPedido = await fetch(`https://panaderia-api.onrender.com/${endpoint}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(pedido)
@@ -385,7 +385,7 @@
             estado: document.getElementById('estado_pago').value
           };
 
-          await fetch('http://localhost:3000/pago', {
+          await fetch('https://panaderia-api.onrender.com/pago', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(pago)
@@ -401,7 +401,7 @@
           };
 
           if (opinion.comentario || !isNaN(opinion.calificacion) || !isNaN(opinion.satisfaccion)) {
-            await fetch('http://localhost:3000/opinion', {
+            await fetch('https://panaderia-api.onrender.com/opinion', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(opinion)
