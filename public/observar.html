@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Ver Clientes / Proveedores</title>
+  <title>Socios Comerciales - Panadería</title>
   <style>
     :root {
       --color-amarillo: #F9D923;
@@ -12,77 +12,124 @@
     }
 
     body {
-      font-family: Arial, sans-serif;
-      background-color: var(--color-azul-claro);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, var(--color-azul-claro), #fff);
       margin: 0;
       padding: 0;
+      color: var(--color-azul);
     }
 
     header {
       background-color: var(--color-azul);
       color: white;
-      padding: 1rem;
+      padding: 25px 20px;
       text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
     h1 {
       margin: 0;
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
 
+    .contenedor {
+      background-color: white;
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border: 2px solid var(--color-amarillo);
+    }
+
+    /* TABS */
     .tabs {
       display: flex;
-      justify-content: center;
-      margin-top: 1rem;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--color-azul);
     }
 
     .tab-btn {
-      background-color: var(--color-amarillo);
+      padding: 12px 25px;
+      background: none;
       border: none;
-      padding: 0.75rem 2rem;
       cursor: pointer;
-      margin: 0 0.5rem;
-      border-radius: 5px;
       font-weight: bold;
-      transition: background-color 0.3s;
-    }
-
-    .tab-btn:hover {
-      background-color: var(--color-hover);
+      color: var(--color-azul);
+      transition: all 0.3s;
     }
 
     .tab-btn.active {
-      background-color: var(--color-azul);
-      color: white;
+      background: var(--color-amarillo);
+      color: var(--color-azul);
+      border-radius: 5px 5px 0 0;
     }
 
     .tab-content {
       display: none;
-      padding: 1.5rem;
     }
 
     .tab-content.active {
       display: block;
     }
 
+    /* TABLAS */
     table {
       width: 100%;
       border-collapse: collapse;
-      background-color: white;
+      margin: 15px 0;
     }
 
     th, td {
-      border: 1px solid #ccc;
-      padding: 0.75rem;
+      padding: 12px 15px;
+      border-bottom: 1px solid #ddd;
       text-align: left;
     }
 
     th {
-      background-color: var(--color-amarillo);
+      background-color: var(--color-azul);
+      color: white;
     }
 
-    .mensaje-carga, .mensaje-error {
-      text-align: center;
+    tr:hover {
+      background-color: var(--color-azul-claro);
+    }
+
+    .volver {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: var(--color-azul);
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-top: 20px;
+      transition: all 0.3s;
+    }
+
+    .volver:hover {
+      background-color: var(--color-hover);
       color: var(--color-azul);
+      transform: translateY(-2px);
+    }
+
+    /* Mensajes */
+    .mensaje-carga {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+      font-style: italic;
+    }
+
+    .mensaje-error {
+      text-align: center;
+      padding: 20px;
+      color: #d32f2f;
+      font-weight: bold;
     }
   </style>
 </head>
