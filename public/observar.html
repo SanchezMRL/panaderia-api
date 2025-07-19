@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Socios Comerciales - Panadería</title>
+  <title>Ver Clientes / Proveedores</title>
   <style>
     :root {
       --color-amarillo: #F9D923;
@@ -12,202 +12,144 @@
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, var(--color-azul-claro), #fff);
+      font-family: Arial, sans-serif;
+      background-color: var(--color-azul-claro);
       margin: 0;
       padding: 0;
-      color: var(--color-azul);
     }
 
     header {
       background-color: var(--color-azul);
       color: white;
-      padding: 25px 20px;
+      padding: 1rem;
       text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
     h1 {
       margin: 0;
-      font-size: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
     }
 
-    .contenedor {
-      background-color: white;
-      max-width: 1200px;
-      margin: 30px auto;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      border: 2px solid var(--color-amarillo);
-    }
-
-    /* TABS */
     .tabs {
       display: flex;
-      margin-bottom: 20px;
-      border-bottom: 2px solid var(--color-azul);
+      justify-content: center;
+      margin-top: 1rem;
     }
 
     .tab-btn {
-      padding: 12px 25px;
-      background: none;
+      background-color: var(--color-amarillo);
       border: none;
+      padding: 0.75rem 2rem;
       cursor: pointer;
+      margin: 0 0.5rem;
+      border-radius: 5px;
       font-weight: bold;
-      color: var(--color-azul);
-      transition: all 0.3s;
+      transition: background-color 0.3s;
+    }
+
+    .tab-btn:hover {
+      background-color: var(--color-hover);
     }
 
     .tab-btn.active {
-      background: var(--color-amarillo);
-      color: var(--color-azul);
-      border-radius: 5px 5px 0 0;
+      background-color: var(--color-azul);
+      color: white;
     }
 
     .tab-content {
       display: none;
+      padding: 1.5rem;
     }
 
     .tab-content.active {
       display: block;
     }
 
-    /* TABLAS */
     table {
       width: 100%;
       border-collapse: collapse;
-      margin: 15px 0;
+      background-color: white;
     }
 
     th, td {
-      padding: 12px 15px;
-      border-bottom: 1px solid #ddd;
+      border: 1px solid #ccc;
+      padding: 0.75rem;
       text-align: left;
     }
 
     th {
-      background-color: var(--color-azul);
-      color: white;
+      background-color: var(--color-amarillo);
     }
 
-    tr:hover {
-      background-color: var(--color-azul-claro);
-    }
-
-    .volver {
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: var(--color-azul);
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      font-weight: bold;
-      margin-top: 20px;
-      transition: all 0.3s;
-    }
-
-    .volver:hover {
-      background-color: var(--color-hover);
+    .mensaje-carga, .mensaje-error {
+      text-align: center;
       color: var(--color-azul);
-      transform: translateY(-2px);
-    }
-
-    /* Mensajes */
-    .mensaje-carga {
-      text-align: center;
-      padding: 20px;
-      color: #666;
-      font-style: italic;
-    }
-
-    .mensaje-error {
-      text-align: center;
-      padding: 20px;
-      color: #d32f2f;
-      font-weight: bold;
     }
   </style>
 </head>
 <body>
-
   <header>
-    <h1><span>🤝</span> Socios Comerciales</h1>
+    <h1>Ver Clientes / Proveedores</h1>
   </header>
 
-  <div class="contenedor">
-    <div class="tabs">
-      <button class="tab-btn active" onclick="cambiarTab('clientes', event)">Clientes</button>
-      <button class="tab-btn" onclick="cambiarTab('proveedores', event)">Proveedores</button>
-    </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="cambiarTab('clientes', event)">Clientes</button>
+    <button class="tab-btn" onclick="cambiarTab('proveedores', event)">Proveedores</button>
+  </div>
 
-    <div id="clientes" class="tab-content active">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Dirección</th>
-            <th>Teléfono</th>
-            <th>Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td colspan="5" class="mensaje-carga">Cargando datos de clientes...</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div id="clientes" class="tab-content active">
+    <h2>Clientes Registrados</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Dirección</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Datos se cargan dinámicamente -->
+      </tbody>
+    </table>
+  </div>
 
-    <div id="proveedores" class="tab-content">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Dirección</th>
-            <th>Teléfono</th>
-            <th>Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td colspan="5" class="mensaje-carga">Cargando datos de proveedores...</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <a class="volver" href="inicio.html">← Volver al Inicio</a>
+  <div id="proveedores" class="tab-content">
+    <h2>Proveedores Registrados</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Dirección</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Datos se cargan dinámicamente -->
+      </tbody>
+    </table>
   </div>
 
   <script>
-  // Función para cambiar entre pestañas
-  function cambiarTab(tabId, event) {
-    // Oculta todos los contenidos
-    document.querySelectorAll('.tab-content').forEach(tab => {
-      tab.classList.remove('active');
-    });
+    // Cambia entre pestañas
+    function cambiarTab(tabId, event) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
 
-    // Desactiva todos los botones
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.classList.remove('active');
-    });
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
 
-    // Activa el tab y botón seleccionado
-    document.getElementById(tabId).classList.add('active');
-    event.target.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
 
-    // Carga los datos del tab seleccionado
-    cargarDatos(tabId);
-  }
-</script>
-      // Función para cargar datos desde la API
+      cargarDatos(tabId);
+    }
+
+    // Cargar datos desde la API
     async function cargarDatos(tipo) {
       const tbody = document.querySelector(`#${tipo} tbody`);
       const endpoint = tipo === 'clientes' ? '/clientes' : '/proveedores';
@@ -262,7 +204,7 @@
       }
     }
 
-    // Cargar datos de clientes al cargar la página
+    // Carga inicial de clientes
     document.addEventListener('DOMContentLoaded', () => {
       cargarDatos('clientes');
     });
