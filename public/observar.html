@@ -207,8 +207,7 @@
     cargarDatos(tabId);
   }
 </script>
-
-    // Función para cargar datos desde la API
+      // Función para cargar datos desde la API
     async function cargarDatos(tipo) {
       const tbody = document.querySelector(`#${tipo} tbody`);
       const endpoint = tipo === 'clientes' ? '/clientes' : '/proveedores';
