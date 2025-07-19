@@ -187,25 +187,26 @@
   </div>
 
   <script>
-    // Función para cambiar entre pestañas
-    function cambiarTab(tabId, event) {
-      // Oculta todos los contenidos
-      document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-      });
+  // Función para cambiar entre pestañas
+  function cambiarTab(tabId, event) {
+    // Oculta todos los contenidos
+    document.querySelectorAll('.tab-content').forEach(tab => {
+      tab.classList.remove('active');
+    });
 
-      // Desactiva todos los botones
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
+    // Desactiva todos los botones
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
 
-      // Activa el tab y botón seleccionado
-      document.getElementById(tabId).classList.add('active');
-      event.currentTarget.classList.add('active');
+    // Activa el tab y botón seleccionado
+    document.getElementById(tabId).classList.add('active');
+    event.target.classList.add('active');
 
-      // Carga los datos del tab seleccionado
-      cargarDatos(tabId);
-    }
+    // Carga los datos del tab seleccionado
+    cargarDatos(tabId);
+  }
+</script>
 
     // Función para cargar datos desde la API
     async function cargarDatos(tipo) {
