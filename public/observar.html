@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Ver Clientes o Proveedores</title>
+  <title>Socios Comerciales - Panadería</title>
   <style>
     :root {
       --color-amarillo: #F9D923;
@@ -12,57 +12,81 @@
     }
 
     body {
-      font-family: Arial, sans-serif;
-      background-color: var(--color-azul-claro);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, var(--color-azul-claro), #fff);
       margin: 0;
       padding: 0;
+      color: var(--color-azul);
     }
 
-    .container {
-      max-width: 800px;
-      margin: 40px auto;
-      background-color: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    h2 {
+    header {
+      background-color: var(--color-azul);
+      color: white;
+      padding: 25px 20px;
       text-align: center;
-      color: var(--color-azul);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
-    select, button {
-      padding: 10px;
-      font-size: 16px;
-      margin-top: 10px;
+    h1 {
+      margin: 0;
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .contenedor {
+      background-color: white;
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border: 2px solid var(--color-amarillo);
+    }
+
+    /* TABS */
+    .tabs {
+      display: flex;
       margin-bottom: 20px;
-      width: 100%;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      border-bottom: 2px solid var(--color-azul);
     }
 
-    button {
-      background-color: var(--color-amarillo);
-      color: var(--color-azul);
+    .tab-btn {
+      padding: 12px 25px;
+      background: none;
+      border: none;
       cursor: pointer;
       font-weight: bold;
-      transition: background-color 0.3s;
+      color: var(--color-azul);
+      transition: all 0.3s;
     }
 
-    button:hover {
-      background-color: var(--color-hover);
+    .tab-btn.active {
+      background: var(--color-amarillo);
+      color: var(--color-azul);
+      border-radius: 5px 5px 0 0;
     }
 
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* TABLAS */
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin: 15px 0;
     }
 
     th, td {
-      border: 1px solid #ddd;
-      padding: 12px;
+      padding: 12px 15px;
+      border-bottom: 1px solid #ddd;
       text-align: left;
     }
 
@@ -71,13 +95,31 @@
       color: white;
     }
 
-    .mensaje-error {
-      color: red;
-      margin-top: 10px;
+    tr:hover {
+      background-color: var(--color-azul-claro);
+    }
+
+    .volver {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: var(--color-azul);
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-top: 20px;
+      transition: all 0.3s;
+    }
+
+    .volver:hover {
+      background-color: var(--color-hover);
+      color: var(--color-azul);
+      transform: translateY(-2px);
     }
   </style>
 </head>
 <body>
+  
   <div class="container">
     <h2>Ver Clientes o Proveedores</h2>
 
