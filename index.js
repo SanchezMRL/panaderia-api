@@ -600,7 +600,7 @@ app.get('/api/reportes/clientes_atendidos', async (req, res) => {
 // 👥 GET: Obtener todos los clientes
 app.get('/clientes', async (req, res) => {
   try {
-    const result = await pgPool.query('SELECT * FROM Cliente ORDER BY nombre ASC');
+    const result = await pgPool.query('SELECT * FROM Cliente ORDER BY id_cliente ASC');
     res.json(result.rows);
   } catch (err) {
     console.error('❌ Error al obtener clientes:', err);
@@ -611,7 +611,7 @@ app.get('/clientes', async (req, res) => {
 // 🏭 GET: Obtener todos los proveedores
 app.get('/proveedores', async (req, res) => {
   try {
-    const result = await pgPool.query('SELECT * FROM Proveedor ORDER BY nombre ASC');
+    const result = await pgPool.query('SELECT * FROM Proveedor ORDER BY id_proveedor ASC');
     res.json(result.rows);
   } catch (err) {
     console.error('❌ Error al obtener proveedores:', err);
