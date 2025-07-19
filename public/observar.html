@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ver Clientes o Proveedores</title>
+  <style>
+    :root {
+      --color-amarillo: #F9D923;
+      --color-azul: #0A2F66;
+      --color-azul-claro: #E8F1FA;
+      --color-hover: #FFD43B;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--color-azul-claro);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--color-azul);
+    }
+
+    select, button {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: var(--color-amarillo);
+      color: var(--color-azul);
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: var(--color-hover);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--color-azul);
+      color: white;
+    }
+
+    .mensaje-error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Ver Clientes o Proveedores</h2>
+
+    <label for="tipo">Seleccionar tipo:</label>
+    <select id="tipo">
+      <option value="cliente">Cliente</option>
+      <option value="proveedor">Proveedor</option>
+    </select>
+
+    <button onclick="obtenerDatos()">Mostrar</button>
+
+    <div id="resultado"></div>
+    <div class="mensaje-error" id="mensajeError"></div>
+  </div>
+
+  <script>
+    async function obtenerDatos() {
+      const tipo = document.getElementById("tipo").value;
+      const url = `/${tipo}`; // usa la misma ruta del backend
+
+      const mensajeError = document.getElementById("mensajeError");
+      mensajeError.textContent = "";
+      document.getElementById("resultado").innerHTML = "";
+
+      try {
+        const respuesta = await fetch(url);
+        if (!respuesta.ok) throw new Error("Error en la solicitud");
+
+        const datos = await respuesta.json();
+        if (!Array.isArray(datos)) throw new Error("Datos inválidos");
+
+        if (datos.length === 0) {
+          document.getElementById("resultado").innerHTML = "<p>No hay registros.</p>";
+          return;
+        }
+
+        let html = "<table><tr>";
+        for (const clave in datos[0]) {
+          html += `<th>${clave}</th>`;
+        }
+        html += "</tr>";
+
+        for (const persona of datos) {
+          html += "<tr>";
+          for (const clave in persona) {
+            html += `<td>${persona[clave]}</td>`;
+          }
+          html += "</tr>";
+        }
+        html += "</table>";
+        document.getElementById("resultado").innerHTML = html;
+
+      } catch (error) {
+        mensajeError.textContent = "❌ No se pudieron obtener los datos. Verifica la conexión con el backend.";
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
