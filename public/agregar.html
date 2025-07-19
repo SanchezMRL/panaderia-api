@@ -170,9 +170,9 @@
       try {
         let endpoint;
         if (tipo === 'cliente') {
-          endpoint = 'http://localhost:3000/cliente';
+          endpoint = '/cliente';
         } else {
-          endpoint = 'http://localhost:3000/proveedor';
+          endpoint = '/proveedor';
         }
 
         const response = await fetch(endpoint, {
