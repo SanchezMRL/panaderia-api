@@ -597,6 +597,56 @@ app.get('/api/reportes/clientes_atendidos', async (req, res) => {
   }
 });
 
+// 👥 GET: Obtener todos los clientes
+app.get('/clientes', async (req, res) => {
+  try {
+    const result = await pgPool.query('SELECT * FROM Cliente ORDER BY nombre ASC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('❌ Error al obtener clientes:', err);
+    res.status(500).json({ error: 'Error al obtener clientes' });
+  }
+});
+
+// 🏭 GET: Obtener todos los proveedores
+app.get('/proveedores', async (req, res) => {
+  try {
+    const result = await pgPool.query('SELECT * FROM Proveedor ORDER BY nombre ASC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('❌ Error al obtener proveedores:', err);
+    res.status(500).json({ error: 'Error al obtener proveedores' });
+  }
+});
+
+// 👤 GET: Obtener un cliente específico por ID
+app.get('/cliente/:id', async (req, res) => {
+  try {
+    const result = await pgPool.query('SELECT * FROM Cliente WHERE id_cliente = $1', [req.params.id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Cliente no encontrado' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('❌ Error al obtener cliente:', err);
+    res.status(500).json({ error: 'Error al obtener cliente' });
+  }
+});
+
+// 🏢 GET: Obtener un proveedor específico por ID
+app.get('/proveedor/:id', async (req, res) => {
+  try {
+    const result = await pgPool.query('SELECT * FROM Proveedor WHERE id_proveedor = $1', [req.params.id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Proveedor no encontrado' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('❌ Error al obtener proveedor:', err);
+    res.status(500).json({ error: 'Error al obtener proveedor' });
+  }
+});
+
 // 🚀 Puerto para Render
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
