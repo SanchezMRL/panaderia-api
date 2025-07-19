@@ -134,69 +134,80 @@
   </style>
 </head>
 <body>
+
   <header>
-    <h1>Ver Clientes / Proveedores</h1>
+    <h1><span>🤝</span> Socios Comerciales</h1>
   </header>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="cambiarTab('clientes', event)">Clientes</button>
-    <button class="tab-btn" onclick="cambiarTab('proveedores', event)">Proveedores</button>
-  </div>
+  <div class="contenedor">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="cambiarTab('clientes', event)">Clientes</button>
+      <button class="tab-btn" onclick="cambiarTab('proveedores', event)">Proveedores</button>
+    </div>
 
-  <div id="clientes" class="tab-content active">
-    <h2>Clientes Registrados</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Dirección</th>
-          <th>Teléfono</th>
-          <th>Email</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Datos se cargan dinámicamente -->
-      </tbody>
-    </table>
-  </div>
+    <div id="clientes" class="tab-content active">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="5" class="mensaje-carga">Cargando datos de clientes...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-  <div id="proveedores" class="tab-content">
-    <h2>Proveedores Registrados</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Dirección</th>
-          <th>Teléfono</th>
-          <th>Email</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Datos se cargan dinámicamente -->
-      </tbody>
-    </table>
+    <div id="proveedores" class="tab-content">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="5" class="mensaje-carga">Cargando datos de proveedores...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <a class="volver" href="inicio.html">← Volver al Inicio</a>
   </div>
 
   <script>
-    // Cambia entre pestañas
+    // Función para cambiar entre pestañas
     function cambiarTab(tabId, event) {
+      // Oculta todos los contenidos
       document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
       });
-
+      
+      // Desactiva todos los botones
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
       });
-
+      
+      // Activa el tab seleccionado
       document.getElementById(tabId).classList.add('active');
       event.currentTarget.classList.add('active');
-
+      
+      // Carga los datos del tab seleccionado
       cargarDatos(tabId);
     }
 
-    // Cargar datos desde la API
+    // Función para cargar datos desde la API
     async function cargarDatos(tipo) {
       const tbody = document.querySelector(`#${tipo} tbody`);
       const endpoint = tipo === 'clientes' ? '/clientes' : '/proveedores';
@@ -228,8 +239,9 @@
         tbody.innerHTML = '';
         data.forEach(item => {
           const row = document.createElement('tr');
+          const idField = tipo === 'clientes' ? 'id_cliente' : 'id_proveedor';
           row.innerHTML = `
-            <td>${item.id_${tipo} || '-'}</td>
+            <td>${item[idField] || '-'}</td>
             <td>${item.nombre || '-'}</td>
             <td>${item.direccion || '-'}</td>
             <td>${item.telefono || '-'}</td>
@@ -251,7 +263,7 @@
       }
     }
 
-    // Carga inicial de clientes
+    // Cargar datos de clientes al cargar la página
     document.addEventListener('DOMContentLoaded', () => {
       cargarDatos('clientes');
     });
