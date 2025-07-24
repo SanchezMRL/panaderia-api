@@ -311,6 +311,10 @@ app.get('/pago/pedido/:id_pedido_cliente', async (req, res) => {
 app.post('/opinion', async (req, res) => {
   const { id_pedido_cliente, comentario, calificacion, satisfaccion, fecha } = req.body;
 
+  if (!id_pedido_cliente) {
+    return res.status(400).json({ error: 'El ID del pedido es obligatorio' });
+  }
+
   try {
     await mongoDb.collection('opiniones_pedidos').insertOne({
       id_pedido_cliente,
@@ -327,6 +331,7 @@ app.post('/opinion', async (req, res) => {
     res.status(500).json({ error: 'Error al guardar la opinión' });
   }
 });
+
 
 app.get('/dashboard/opiniones', async (req, res) => {
   try {
